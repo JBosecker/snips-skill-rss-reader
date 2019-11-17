@@ -36,7 +36,7 @@ def read_configuration_file(configuration_file):
 def get_overview(hermes, intent_message):
     result_sentence = ""
 
-    file = urllib.request.urlopen(config["service"]["feed_url"])
+    file = urllib.request.urlopen(config["global"]["feed_url"])
     data = file.read()
     file.close()
     dict = xmltodict.parse(data)
@@ -56,7 +56,7 @@ def get_overview(hermes, intent_message):
 if __name__ == "__main__":
     config = read_configuration_file(CONFIG_INI)
 
-    if config.get("service").get("feed_url") is None:
+    if config.get("global").get("feed_url") is None:
         print "No feed URL key in config.ini, you must setup an RSS feed URL for this skill to work"
         sys.exit(1)
 
