@@ -61,11 +61,6 @@ if __name__ == "__main__":
         sys.exit(1)
 
     with Hermes(MQTT_ADDR.encode("ascii")) as h:
-        h.subscribe_intent("getOverview",
+        h.subscribe_intent("GetRssReaderOverview",
                            get_overview) \
-#        .subscribe_intent("searchWeatherForecastTemperature",
-#                          searchWeatherForecastTemperature) \
-#        .subscribe_intent("searchWeatherForecastCondition",
-#                          searchWeatherForecastCondition) \
-#        .subscribe_intent("searchWeatherForecast", searchWeatherForecast) \
         .loop_forever()
