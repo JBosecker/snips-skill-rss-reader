@@ -29,7 +29,7 @@ class Template(object):
 
         self.start_blocking()
 
-    def get_overview(hermes, intent_message):
+    def get_overview(self, hermes, intent_message):
         result_sentence = ""
 
         file = urllib.request.urlopen(self.config["global"]["feed_url"])
@@ -48,7 +48,7 @@ class Template(object):
 
         hermes.publish_end_session(intent_message.session_id, result_sentence)
 
-    def master_intent_callback(self,hermes, intent_message):
+    def master_intent_callback(self, hermes, intent_message):
         coming_intent = intent_message.intent.intent_name
         if coming_intent == 'Johannes:GetRssReaderOverview':
             self.get_overview(hermes, intent_message)
