@@ -38,7 +38,7 @@ class Template(object):
         dict = xmltodict.parse(data)
 
         titles = ""
-        for item in data['rss']['channel']['item']:
+        for item in dict['rss']['channel']['item']:
             titles = titles + "\n" + item['title']
 
         if len(titles) > 0:
