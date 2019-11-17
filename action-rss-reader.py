@@ -55,9 +55,10 @@ def get_overview(hermes, intent_message):
 
 if __name__ == "__main__":
     config = read_configuration_file(CONFIG_INI)
-
+    print(config)
+    
     if config.get("global").get("feed_url") is None:
-        print "No feed URL key in config.ini, you must setup an RSS feed URL for this skill to work"
+        print("No feed URL key in config.ini, you must setup an RSS feed URL for this skill to work")
         sys.exit(1)
 
     with Hermes(MQTT_ADDR.encode("ascii")) as h:
