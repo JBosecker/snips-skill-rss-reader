@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import configparser
+from snipsTools import SnipsConfigParser
 from hermes_python.hermes import Hermes
 from hermes_python.ontology import *
 import io
@@ -9,55 +9,53 @@ import urllib.request, urllib.parse, urllib.error
 import xmltodict
 import datetime
 
-CONFIGURATION_ENCODING_FORMAT = "utf-8"
 CONFIG_INI = "config.ini"
 
-config = dict()
+MQTT_IP_ADDR = "localhost"
+MQTT_PORT = 1883
+MQTT_ADDR = "{}:{}".format(MQTT_IP_ADDR, str(MQTT_PORT))
 
-class SnipsConfigParser(configparser.SafeConfigParser):
-    def to_dict(self):
-        return {section : {option_name : option for option_name, option in self.items(section)} for section in self.sections()}
+class Template(object):
 
+    def __init__(self):
+        try:
+            self.config = SnipsConfigParser.read_configuration_file(CONFIG_INI)
+        except :
+            self.config = None
 
-def read_configuration_file(configuration_file):
-    try:
-        with io.open(configuration_file, encoding=CONFIGURATION_ENCODING_FORMAT) as f:
-            conf_parser = SnipsConfigParser()
-            conf_parser.readfp(f)
-            return conf_parser.to_dict()
-    except (IOError, configparser.Error) as e:
-        return dict()
+        if config.get("global").get("feed_url") is None:
+            print("No feed URL key in config.ini, you must setup an RSS feed URL for this skill to work")
+            sys.exit(1)
 
+        self.start_blocking()
 
-def get_overview(hermes, intent_message):
-    result_sentence = ""
+    def get_overview(hermes, intent_message):
+        result_sentence = ""
 
-    file = urllib.request.urlopen(config["global"]["feed_url"])
-    data = file.read()
-    file.close()
-    dict = xmltodict.parse(data)
+        file = urllib.request.urlopen(config["global"]["feed_url"])
+        data = file.read()
+        file.close()
+        dict = xmltodict.parse(data)
 
-    titles = ""
-    for item in data['rss']['channel']['item']:
-        titles = titles + "\n" + item['title']
+        titles = ""
+        for item in data['rss']['channel']['item']:
+            titles = titles + "\n" + item['title']
 
-    if len(titles) > 0:
-        result_sentence = "Ich habe folgende Nachrichten gefunden:" + titles
-    else:
-        result_sentence = "Es gibt nichts Neues."
+        if len(titles) > 0:
+            result_sentence = "Ich habe folgende Nachrichten gefunden:" + titles
+        else:
+            result_sentence = "Es gibt nichts Neues."
 
-    hermes.publish_end_session(intent_message.session_id, result_sentence)
+        hermes.publish_end_session(intent_message.session_id, result_sentence)
 
+    def master_intent_callback(self,hermes, intent_message):
+        coming_intent = intent_message.intent.intent_name
+        if coming_intent == 'Johannes:GetRssReaderOverview':
+            self.get_overview(hermes, intent_message)
+
+    def start_blocking(self):
+        with Hermes(MQTT_ADDR) as h:
+            h.subscribe_intents(self.master_intent_callback).start()
 
 if __name__ == "__main__":
-    config = read_configuration_file(CONFIG_INI)
-    print(config)
-
-    if config.get("global").get("feed_url") is None:
-        print("No feed URL key in config.ini, you must setup an RSS feed URL for this skill to work")
-        sys.exit(1)
-
-    with Hermes("localhost:1883") as h:
-        h.subscribe_intent("GetRssReaderOverview",
-                           get_overview) \
-        .loop_forever()
+    Template()
