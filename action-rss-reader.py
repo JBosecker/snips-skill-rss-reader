@@ -23,7 +23,7 @@ class Template(object):
         except :
             self.config = None
 
-        if config.get("global").get("feed_url") is None:
+        if self.config.get("global").get("feed_url") is None:
             print("No feed URL key in config.ini, you must setup an RSS feed URL for this skill to work")
             sys.exit(1)
 
@@ -32,7 +32,7 @@ class Template(object):
     def get_overview(hermes, intent_message):
         result_sentence = ""
 
-        file = urllib.request.urlopen(config["global"]["feed_url"])
+        file = urllib.request.urlopen(self.config["global"]["feed_url"])
         data = file.read()
         file.close()
         dict = xmltodict.parse(data)
