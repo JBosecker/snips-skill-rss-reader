@@ -37,11 +37,21 @@ class Template(object):
         file.close()
         dict = xmltodict.parse(data)
 
+        maximum_number_of_items = self.config["global"]["maximum_number_of_items"]
+        if maximum_number_of_items is None:
+            maximum_number_of_items = 5
+        
         titles = ""
-        for item in dict['rss']['channel']['item']:
-            titles = titles + "\n" + item['title']
+        number = 0
 
-        if len(titles) > 0:
+        for item in dict['rss']['channel']['item']:
+            number = number + 1
+            titles = titles + "\n" + number + ") " item['title'] + "."
+
+            if number >= maximum_number_of_items:
+                break
+
+        if number > 0:
             result_sentence = "Ich habe folgende Nachrichten gefunden:" + titles
         else:
             result_sentence = "Es gibt nichts Neues."
