@@ -40,13 +40,13 @@ class Template(object):
         maximum_number_of_items = self.config["global"]["maximum_number_of_items"]
         if maximum_number_of_items is None:
             maximum_number_of_items = 5
-        
+
         titles = ""
         number = 0
 
         for item in dict['rss']['channel']['item']:
             number = number + 1
-            titles = titles + "\n" + number + ") " item['title'] + "."
+            titles = titles + "\n" + str(number) + ") " item['title'] + "."
 
             if number >= maximum_number_of_items:
                 break
