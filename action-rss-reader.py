@@ -40,6 +40,8 @@ class Template(object):
         maximum_number_of_items = self.config["global"]["maximum_number_of_items"]
         if maximum_number_of_items is None:
             maximum_number_of_items = 5
+        else
+            maximum_number_of_items = int(maximum_number_of_items)
 
         titles = ""
         number = 0
