@@ -46,7 +46,7 @@ class Template(object):
 
         for item in dict['rss']['channel']['item']:
             number = number + 1
-            titles = titles + "\n" + str(number) + ") " item['title'] + "."
+            titles = titles + "\n" + str(number) + ") " + item['title'] + "."
 
             if number >= maximum_number_of_items:
                 break
